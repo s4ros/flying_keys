@@ -25,6 +25,19 @@ class ThreadKeyHooker(threading.Thread):
         keyboard.wait()
 
 
+class Particle(object):
+    def __init__(self, startx, starty, col, width):
+        self.x = startx
+        self.y = starty
+        self.wide = width
+        self.color = col
+
+    def move(self, x, y):
+        self.x = x + random.randint(0, self.wide)
+        self.y = y + random.randint(-5, 15)
+        self.color -= 2
+
+
 class Keystroke(object):
     def __init__(self, surface, font):
         max_x, max_y = surface.get_size()
@@ -32,23 +45,36 @@ class Keystroke(object):
         self.dx = random.randint(3, 25)
         self.y = 10
         self.dy = 0
+        self.gravity = 0.3
         self.width = font.get_width() + 4
         self.height = font.get_height()
-        self.color = random.randint(30, 200)
+        self.color = 255
         self.font = font
+        self.n_particles = 50
+        self.particles = [Particle(self.x, self.y, 255, self.width)
+                          for x in range(self.n_particles)]
 
-    def draw_button(self, surface):
+    def draw(self, surface):
         pygame.draw.rect(
             surface,
             (self.color, 0, 0),
             (self.x, self.y, self.width, self.height),
             0)
+        for p in self.particles:
+            pygame.draw.circle(
+                surface,
+                (p.color, p.color, 0),
+                (int(p.x), int(p.y)), 2
+            )
+            p.move(self.x,
+                   self.y - self.dy)
         surface.blit(self.font, (self.x + 2, self.y))
 
     def newton(self):
-        self.dy += 0.5
+        self.dy += self.gravity
         self.x += self.dx
         self.y += self.dy
+        self.color -= 2
 
 
 class KeyVisualizer(object):
@@ -86,7 +112,7 @@ class KeyVisualizer(object):
 
     def draw_all_buttons(self):
         for b in self.buttons:
-            b.draw_button(self.screen)
+            b.draw(self.screen)
 
     def run(self):
         while True:
@@ -107,5 +133,5 @@ class KeyVisualizer(object):
 
 if __name__ == "__main__":
     q = queue.Queue()
-    kv = KeyVisualizer(q, 1920, 1080)
+    kv = KeyVisualizer(q, 1720, 1080)
     kv.run()
