@@ -10,7 +10,7 @@ class Hooker(object):
     def __init__(self, q):
         self.queue = q
 
-    def add_key_to_queue(self,e):
+    def add_key_to_queue(self, e):
         if e.event_type == "down":
             self.queue.put(e.name)
 
@@ -25,16 +25,16 @@ class ThreadKeyHooker(threading.Thread):
         keyboard.wait()
 
 
-class Guziczek(object):
+class Keystroke(object):
     def __init__(self, surface, font):
         max_x, max_y = surface.get_size()
-        self.x = random.randint(0, max_x)
-        self.y = random.randint(0, max_y)
-        self.dx = random.randint(-10, 10)
-        self.dy = random.randint(1, 7)
+        self.x = 10
+        self.dx = random.randint(3, 25)
+        self.y = 10
+        self.dy = 0
         self.width = font.get_width() + 4
         self.height = font.get_height()
-        self.color = random.randint(145, 170)
+        self.color = random.randint(30, 200)
         self.font = font
 
     def draw_button(self, surface):
@@ -43,11 +43,12 @@ class Guziczek(object):
             (self.color, 0, 0),
             (self.x, self.y, self.width, self.height),
             0)
-        surface.blit(self.font, (self.x+2, self.y))
+        surface.blit(self.font, (self.x + 2, self.y))
 
     def newton(self):
-            self.x += self.dx
-            self.y += self.dy
+        self.dy += 0.5
+        self.x += self.dx
+        self.y += self.dy
 
 
 class KeyVisualizer(object):
@@ -79,8 +80,8 @@ class KeyVisualizer(object):
             return self.queue.get(False)
 
     def create_button(self, key):
-        text = self.font.render(key, True, (255,255,255))
-        g = Guziczek(self.screen, text)
+        text = self.font.render(key, True, (255, 255, 255))
+        g = Keystroke(self.screen, text)
         self.buttons.append(g)
 
     def draw_all_buttons(self):
