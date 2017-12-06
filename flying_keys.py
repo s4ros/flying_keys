@@ -49,6 +49,7 @@ class Keystroke(object):
         self.width = font.get_width() + 4
         self.height = font.get_height()
         # self.color = 255
+        self.color = (128, 128, 128)
         self.font = font
         self.n_particles = 1
         self.particles = [Particle(self.x - (self.width),
@@ -57,15 +58,20 @@ class Keystroke(object):
                           for x in range(self.n_particles)]
 
     def draw(self, surface):
-        # pygame.draw.rect(
-        #     surface,
-        #     (self.color, 0, 0),
-        #     (self.x, self.y, self.width, self.height),
-        #     0)
-        for p in self.particles:
-            p.move(self.x - self.width ,
-                   self.y - self.dy - self.height // 2)
-            surface.blit(random.choice(images), (p.x, p.y))
+        pygame.draw.rect(
+            surface,
+            self.color,
+            (self.x-20, self.y-5, self.width+40, self.height+10),
+            5)
+        pygame.draw.rect(
+            surface,
+            (255, 255, 255),
+            (self.x-18, self.y-2, self.width+36, self.height+4),
+            0)
+        # for p in self.particles:
+        #     p.move(self.x - self.width ,
+        #            self.y - self.dy - self.height // 2)
+        #     surface.blit(random.choice(images), (p.x, p.y))
         surface.blit(self.font, (self.x + 2, self.y))
 
     def newton(self):
@@ -88,7 +94,7 @@ class KeyVisualizer(object):
         # //
         pygame.init()
         self.clock = pygame.time.Clock()
-        self.font = pygame.font.Font(None, 42)
+        self.font = pygame.font.Font(None, 32)
         self.screen = pygame.display.set_mode((width, height))
         random.seed()
         self.buttons = []
@@ -107,7 +113,7 @@ class KeyVisualizer(object):
             return self.queue.get(False)
 
     def create_button(self, key):
-        text = self.font.render(key, True, (255, 255, 255))
+        text = self.font.render(key, True, (0, 0, 0))
         g = Keystroke(self.screen, text, self.images)
         self.buttons.append(g)
 
@@ -121,7 +127,7 @@ class KeyVisualizer(object):
             try:
                 key = self.get_key_from_queue()
                 print(key)
-                print(self.buttons)
+                # print(self.buttons)
                 self.create_button(key)
             except:
                 pass
@@ -138,5 +144,5 @@ if __name__ == "__main__":
         if file.endswith(".png"):
             filepath = os.path.join("PNG/black_smoke", file)
             images.append(pygame.image.load(filepath))
-    kv = KeyVisualizer(q, images, 1720, 1080)
+    kv = KeyVisualizer(q, images, 1920, 1080)
     kv.run()
